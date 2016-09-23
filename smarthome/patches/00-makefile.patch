@@ -1,0 +1,21 @@
+--- /dev/null
++++ b/src/Makefile
+@@ -0,0 +1,18 @@
++#DAEMON_CFLAGS = -I$(STAGING_DIR)/usr/include/
++DAEMON_LDFLAGS = -fPIC
++DAEMON_CFLAGS = -I../include
++DAEMON_OBJ = daemon.o
++DAEMON_LIB = daemon.so
++DESTDIR=
++%.o: %.c
++	$(CC) $(CPPFLAGS) $(CFLAGS) $(LUA_CFLAGS) $(DAEMON_CFLAGS) -fPIC -c -o $@ $<
++
++compile: $(DAEMON_OBJ)
++	$(CC) $(LDFLAGS) -shared -o $(DAEMON_LIB) $(DAEMON_OBJ) $(DAEMON_LDFLAGS) -s
++
++install: compile
++	install -d -m 755 $(DESTDIR)/usr/lib/lua/
++	install -m 644 $(DAEMON_LIB) $(DESTDIR)/usr/lib/lua/$(DAEMON_LIB)
++
++clean:
++	rm -f *.o *.so

@@ -1,0 +1,24 @@
+m = Map("smarthome", translate("Smart Home"), translate("Control smart appliances by the scenes (At home or not), currently only supports Yeelight smart light"))
+s = m:section(TypedSection, "smarthome", "SmartHome Settings")
+s.addremove = false
+s.anonymous = true
+o = s:option(Flag, "enabled", translate("Enable"))
+o.rmempty = false
+function o.cfgvalue(self, section)
+        return luci.sys.init.enabled("smarthome") and self.enabled or self.disabled
+end
+function o.write(self, section, value)
+        if value == "1" then
+                luci.sys.init.enable("smarthome")
+                luci.sys.call("/etc/init.d/smarthome stop >/dev/null")
+                luci.sys.call("/etc/init.d/smarthome start >/dev/null")
+        else
+                luci.sys.call("/etc/init.d/smarthome stop >/dev/null")
+                luci.sys.init.disable("smarthome")
+        end
+ 
+        return Flag.write(self, section, value)
+end
+o = s:option(DynamicList, "members", translate("Mac of family device"))
+o.datatype = "macaddr"
+return m

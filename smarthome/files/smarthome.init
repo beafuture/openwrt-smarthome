@@ -1,0 +1,34 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2010 OpenWrt.org
+
+START=99
+SERVICE_USE_PID=
+SERVICE_MATCH_EXEC=
+SERVICE_MATCH_NAME=1
+
+
+start() {
+	local enabled
+        config_load 'smarthome'
+	config_get_bool enabled config 'enabled' '0'
+
+	[ "$enabled" -gt 0 ] || return 1
+
+        echo "Starting..."
+	service_start /usr/bin/smarthome.lua
+}
+
+stop() {
+        echo "Stopping..."
+	service_stop /usr/bin/smarthome.lua || true
+}
+
+restart() {
+        stop
+        start
+}
+
+
+reload() {
+        :
+}
